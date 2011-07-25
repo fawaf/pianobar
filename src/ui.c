@@ -137,7 +137,7 @@ static WaitressReturn_t BarPianoHttpRequest (WaitressHandle_t *waith,
 	waith->extraHeaders = "Content-Type: text/xml\r\n";
 	waith->postData = req->postData;
 	waith->method = WAITRESS_METHOD_POST;
-	strncpy (waith->path, req->urlPath, sizeof (waith->path)-1);
+	waith->url.path = req->urlPath;
 
 	return WaitressFetchBuf (waith, &req->responseData);
 }
@@ -330,7 +330,8 @@ static PianoStation_t **BarSortedStations (PianoStation_t *unsortedStations,
  *	@param input fds
  *	@return pointer to selected station or NULL
  */
-PianoStation_t *BarUiSelectStation (BarApp_t *app, const char *prompt) {
+PianoStation_t *BarUiSelectStation (BarApp_t *app, const char *prompt,
+		BarUiSelectStationCallback_t callback) {
 	PianoStation_t **sortedStations = NULL, *retStation = NULL;
 	size_t stationCount, i;
 	char buf[100];
@@ -349,6 +350,7 @@ PianoStation_t *BarUiSelectStation (BarApp_t *app, const char *prompt) {
 	do {
 		for (i = 0; i < stationCount; i++) {
 			const PianoStation_t *currStation = sortedStations[i];
+			/* filter stations */
 			if (BarStrCaseStr (currStation->name, buf) != NULL) {
 				BarUiMsg (&app->settings, MSG_LIST, "%2i) %c%c%c %s\n", i,
 						currStation->useQuickMix ? 'q' : ' ',
@@ -370,6 +372,11 @@ PianoStation_t *BarUiSelectStation (BarApp_t *app, const char *prompt) {
 			if (selected < stationCount) {
 				retStation = sortedStations[selected];
 			}
+		}
+
+		/* hand over buffer to external function if it was not a station number */
+		if (retStation == NULL && callback != NULL) {
+			callback (app, buf);
 		}
 	} while (retStation == NULL);
 

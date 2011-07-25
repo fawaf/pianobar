@@ -1,4 +1,4 @@
-# makefile of pianobar
+# makefile of savepianobar
 
 PREFIX:=/usr/local
 BINDIR:=${PREFIX}/bin
@@ -6,7 +6,7 @@ LIBDIR:=${PREFIX}/lib
 INCDIR:=${PREFIX}/include
 MANDIR:=${PREFIX}/share/man
 DYNLINK:=0
-CFLAGS:=-O2 -DNDEBUG
+CFLAGS:=-O2 -DNDEBUG -W64 -I /opt/local/include
 LDFLAGS:=
 CC:=c99
 
@@ -80,13 +80,13 @@ else
 	LIBMAD_LDFLAGS=-lmad
 endif
 
-# build pianobar
+# build savepianobar
 ifeq (${DYNLINK},1)
-pianobar: ${PIANOBAR_OBJ} ${PIANOBAR_HDR} libpiano.so.0
+savepianobar: ${PIANOBAR_OBJ} ${PIANOBAR_HDR} libpiano.so.0
 	${CC} -o $@ ${PIANOBAR_OBJ} ${LDFLAGS} -lao -lpthread -lm -L. -lpiano \
 			${LIBFAAD_LDFLAGS} ${LIBMAD_LDFLAGS}
 else
-pianobar: ${PIANOBAR_OBJ} ${PIANOBAR_HDR} ${LIBPIANO_OBJ} ${LIBWAITRESS_OBJ} \
+savepianobar: ${PIANOBAR_OBJ} ${PIANOBAR_HDR} ${LIBPIANO_OBJ} ${LIBWAITRESS_OBJ} \
 		${LIBWAITRESS_HDR} ${LIBEZXML_OBJ} ${LIBEZXML_HDR}
 	${CC} ${CFLAGS} ${LDFLAGS} ${PIANOBAR_OBJ} ${LIBPIANO_OBJ} \
 			${LIBWAITRESS_OBJ} ${LIBEZXML_OBJ} -lao -lpthread -lm \
@@ -116,23 +116,23 @@ libpiano.so.0: ${LIBPIANO_RELOBJ} ${LIBPIANO_HDR} ${LIBWAITRESS_RELOBJ} \
 
 clean:
 	${RM} ${PIANOBAR_OBJ} ${LIBPIANO_OBJ} ${LIBWAITRESS_OBJ} ${LIBEZXML_OBJ} \
-			${LIBPIANO_RELOBJ} ${LIBWAITRESS_RELOBJ} ${LIBEZXML_RELOBJ} pianobar \
+			${LIBPIANO_RELOBJ} ${LIBWAITRESS_RELOBJ} ${LIBEZXML_RELOBJ} savepianobar \
 			libpiano.so* libpiano.a
 
-all: pianobar
+all: savepianobar
 
-debug: pianobar
+debug: savepianobar
 debug: CFLAGS=-Wall -pedantic -ggdb
 
 ifeq (${DYNLINK},1)
-install: pianobar install-libpiano
+install: savepianobar install-libpiano
 else
-install: pianobar
+install: savepianobar
 endif
 	install -d ${DESTDIR}/${BINDIR}/
-	install -m755 pianobar ${DESTDIR}/${BINDIR}/
+	install -m755 savepianobar ${DESTDIR}/${BINDIR}/
 	install -d ${DESTDIR}/${MANDIR}/man1/
-	install -m644 contrib/pianobar.1 ${DESTDIR}/${MANDIR}/man1/
+	install -m644 contrib/savepianobar.1 ${DESTDIR}/${MANDIR}/man1/
 
 install-libpiano:
 	install -d ${DESTDIR}/${LIBDIR}/
