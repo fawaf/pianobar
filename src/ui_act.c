@@ -629,4 +629,19 @@ BarUiActCallback(BarUiActManageStation) {
 
 	PianoDestroyStationInfo (&reqData.info);
 }
-
+BarUiActCallback(BarUiActSave) {
+	char buffer [1000];
+	PianoReturn_t pRet;
+	WaitressReturn_t wRet;
+	assert (selStation != NULL);
+	assert (selSong != NULL);
+	sprintf (buffer, "mkdir -p Music/");
+	system(buffer);
+	sprintf (buffer, "wget \"%s\" -O Music/%s.m4a",selSong->audioUrl,selSong->musicId);
+	system(buffer);
+	strcpy (buffer, "Saved Song: Music/");
+	strcat (buffer, selSong->musicId);
+	strcat (buffer, ".mp3\n");
+	BarUiMsg (&app->settings, MSG_INFO, buffer);
+	BarUiActDefaultEventcmd ("songsave");
+}
