@@ -35,7 +35,7 @@ THE SOFTWARE.
 /*	standard eventcmd call
  */
 #define BarUiActDefaultEventcmd(name) BarUiStartEventCmd (&app->settings, \
-		name, app->curStation, app->playlist, &app->player, app->ph.stations, \
+		name, selStation, selSong, &app->player, app->ph.stations, \
 		pRet, wRet)
 
 /*	standard piano call
@@ -428,6 +428,11 @@ BarUiActCallback(BarUiActPrintUpcoming) {
 static void BarUiActQuickmixCallback (BarApp_t *app, char *buf) {
 	PianoStation_t *curStation = app->ph.stations;
 
+	/* do nothing if buf is empty/contains more than one character */
+	if (buf[0] == '\0' || buf[1] != '\0') {
+		return;
+	}
+
 	switch (*buf) {
 		case 't':
 			/* toggle */
@@ -624,21 +629,4 @@ BarUiActCallback(BarUiActManageStation) {
 
 	PianoDestroyStationInfo (&reqData.info);
 }
-/*	save
- */
-BarUiActCallback(BarUiActSave) {
-	char buffer [1000];
-	PianoReturn_t pRet;
-	WaitressReturn_t wRet;
-	assert (selStation != NULL);
-	assert (selSong != NULL);
-	sprintf (buffer, "mkdir -p Music/");
-	system(buffer);
-	sprintf (buffer, "wget \"%s\" -O Music/%s.m4a",selSong->audioUrl,selSong->musicId);
-	system(buffer);
-	strcpy (buffer, "Saved Song: Music/");
-	strcat (buffer, selSong->musicId);
-	strcat (buffer, ".mp3\n");
-	BarUiMsg (&app->settings, MSG_INFO, buffer);
-	BarUiActDefaultEventcmd ("songsave");
-}
+

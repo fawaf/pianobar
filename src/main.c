@@ -21,8 +21,11 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
+#ifndef __FreeBSD__
 #define _POSIX_C_SOURCE 1 /* fileno() */
 #define _BSD_SOURCE /* strdup() */
+#define _DARWIN_C_SOURCE /* strdup() on OS X */
+#endif
 
 /* system includes */
 #include <stdlib.h>
@@ -92,7 +95,7 @@ static void BarMainGetLoginCredentials (BarSettings_t *settings,
 		BarReadlineFds_t *input) {
 	if (settings->username == NULL) {
 		char nameBuf[100];
-		BarUiMsg (settings, MSG_QUESTION, "Username: ");
+		BarUiMsg (settings, MSG_QUESTION, "Email: ");
 		BarReadlineStr (nameBuf, sizeof (nameBuf), input, BAR_RL_DEFAULT);
 		settings->username = strdup (nameBuf);
 	}
