@@ -7,7 +7,6 @@ INCDIR:=${PREFIX}/include
 MANDIR:=${PREFIX}/share/man
 CFLAGS:=-O2 -DNDEBUG -W64 -I /opt/local/include
 DYNLINK:=0
-CFLAGS:=-O2 -DNDEBUG -W64 -I /opt/local/include
 LDFLAGS:=
 CC:=c99
 
